@@ -1,20 +1,31 @@
 #save
 #smooth out battle system 
-    #generate random monster
-        #read player level
-        #scale accordingly
+    #read player level
+        #if player reaches level 5
+            #option appears to fight mid-boss
+        #if player reaches level 10
+            #option appears to fight final boss fight
+        #generate random monster
+            #scale monster stats by level, (2, 4, 6, 8)
     #battle
         #player chooses action
-        #attacks, monster attacks
+        #player attacks, monster attacks
         #result printed
         #continue battle until life < 0
-    #once life < 0
-        #You died or
-        #You won
-            #player experience + 100
-    #if level >= #:
-        #if player experience >= 200:
-            #player level = player level + 1
+        
+        #once life < 0
+            #You died or
+            #You won
+                #player experience + 10
+                #you gained 10 experience
+        #if player experience >= 50:
+                #player level = player level + 1
+                #print(you leveld up, choose 1 for 1 point in str or 2 for 1 point in dex)
+                #input()
+                #You can choose one new skill
+                    #pickbetween one or two
+                #
+            #save player data in to text file
 
 #skills
 #Tutorial (NewGame())
@@ -26,6 +37,7 @@
 
 import random
 import time
+
 #checks if there is save data.
 try:
     hero = open("/hero.txt")
@@ -90,7 +102,7 @@ def menu():
     elif x == "3":
         save()
     elif x == "4":
-        info(hero)
+        CharacterData(hero)
     elif x == "5":
         savequit()
     else:
@@ -107,13 +119,14 @@ def Continue():
     elif x == "2":
         menu()
     elif x == "3":
-        info()
+        CharacterData()
     elif x == "4":
         savequit()
     else:
         print("Incorrect input, please enter 1, 2, 3, or 4")
         Continue()
 def save(hero):
+
 
 def open_hero():
     hero = open("/hero.txt", "r")
