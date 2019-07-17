@@ -37,7 +37,8 @@
 
 import random
 import time
-import json 
+import json
+import os
 
 
 def NewGame():
@@ -45,6 +46,7 @@ def NewGame():
     print("Please enter your Character name")
     x = str(input())
     player = Hero()
+    player.name = x
     print(f"Welcome {player.name}")
     #Below here are the instructions to the game
     print("")
@@ -67,6 +69,12 @@ class Hero:
         self.sp = 40 + (10*self.dex)
         self.all_skills = ["Attack", "Thrust", "Armour_Breaker", "Tendon_Cut", "Berserker_Slash", "Sacrifice",
                            "Sexy_Wink", "Glob_of_Glue", "Armour_Up","Evasive_Boost", "Heal" ]
+    
+    def __eq__(self, target):
+        if self.level == target.level and self.str == target.str and self.dex == target.dex and self.name == target.name:
+            return True
+        else:
+            return False
 
 # the following class methods will be used as skills, it is clumsy, but difficult to make interesting skills otherwise
 ##### skill start #####################################################
@@ -81,10 +89,10 @@ class Hero:
             damage = 0
     #calculates if enemy dodged
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
-            print(f"\n {player.name} uses {attack_name} on {target.name}.")
+            print(f"\n {self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
-            print(f"\n{player.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} took {damage} damage!")
             target.health = target.health - damage
 
@@ -102,6 +110,7 @@ class Hero:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name}'s armour was pierced for {damage} damage!")
             target.health = target.health - damage
+        self.sp = self.sp - 10
 
     def Armour_Breaker(self,target):
         attack_name = "Armour Breaker"
@@ -170,10 +179,11 @@ class Hero:
 
     def Sexy_Wink(self,target):
         attack_name = "Sexy Wink"
-        target.armour[1] = target.armour[1] * 0.6
-        self.evasion[1] = self.evasion[1] * 1.05
+        target.armour[1] = target.armour[1] - 1
+        self.evasion[1] = self.evasion[1] + 1
         print(f"\n {self.name} uses {attack_name} on {target.name}.")
         print(f"{target.name} gets the message and strips of some armour, {self.name} feels swifty")
+        self.sp = self.sp - 10
 
     def Glob_of_Glue(self,target):
         attack_name = "Glob of Glue"
@@ -222,7 +232,7 @@ class Hero:
             while len(choices) < 2:
                 choice = random.choice(self.all_skills)
                 if choice in self.skills or choice in choices:
-                    continue
+                    pass
                 else:
                     choices.append(choice)
             
@@ -231,12 +241,12 @@ class Hero:
             if len(self.skills)>=4:
                 userin = input("You can only have four skills, do you want to remove one?: ").lower()
                 if userin == "yes":
-                    remover = int(input(f"""Which skill do you want removed: 1:{self.skills[0]}, 2:{self.skills[1]}, 3:{self.skills[]} or"\
+                    remover = int(input(f"""Which skill do you want removed: 1:{self.skills[0]}, 2:{self.skills[1]}, 3:{self.skills[2]} or"\
                                     4:{self.skills[3]}: """))-1
                     del(self.skills[remover])
                     self.skills.append(choices[user_choice])
                 else:
-                    continue
+                    pass
             else:
                      
                 self.skills.append(choices[user_choice])
@@ -443,6 +453,7 @@ def finalboss():
 
 #battle simulation, (Simon, Aaron)
 def battle():
+    lost = False
     #generates monster name
     monster_name = ["Ice", "Flame", "Stone"]
     monster_name2 = ["Golem", "Slime", "Wolf"]
@@ -498,7 +509,7 @@ def battle():
         #since eval() is being used, this is for security reasons
         if y >=0 and y <= 10:
             try:
-                eval(f"{player.skills[y]}(monster)")
+                eval(f"player.{player.skills[y]}(monster)") #player.tackle(monster)
             except:
                 print("incorrect input")
                 continue
@@ -514,6 +525,14 @@ def battle():
         print("You died")
         print("Your high score is _____")
         print("New Game? y/n")
+        while True:
+            x = input()
+            if x == "y":
+                NewGame()
+            elif x == "n":
+                player = Hero()
+                save(player)
+                print("See you next time")
     else:
         print(f"You defeated {monster.name} and gained 30 experience")
         origin.experience = origin.experience + 30
@@ -595,6 +614,9 @@ z = eval(f"{m}(x,y)")
 #checks if there is save data.
 try:
     hero = open("hero.json")
+    player = Hero()
+    if player == hero:
+        NewGame()
     Continue()
 #no save data, so new game
 except:
