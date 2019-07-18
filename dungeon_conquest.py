@@ -96,9 +96,9 @@ class Hero:
             print(f"{target.name} took {damage} damage!")
             target.health = target.health - damage
 
-    def Thrust(self,target):
+    def Thrust(self,target):  # Same as attack, but ignores some of the target's armour
         attack_name = "Thrust"
-        damage = random.randint(self.attack[0], self.attack[1]) - random.randint(target.armour[0], target.armour[1] - self.attack[0])
+        damage = random.randint(self.attack[0], self.attack[1]) - random.randint(target.armour[0], target.armour[1] -2)
         if damage < 0:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
@@ -110,11 +110,11 @@ class Hero:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name}'s armour was pierced for {damage} damage!")
             target.health = target.health - damage
-        self.sp = self.sp - 10
+        self.sp = self.sp - 5
 
-    def Armour_Breaker(self,target):
+    def Armour_Breaker(self,target):  # Is weaker than attack, but damages target's armour
         attack_name = "Armour Breaker"
-        damage = random.randint(self.attack[0]*0.5, self.attack[1]*0.5) - random.randint(target.armour[0], target.armour[1])
+        damage = random.randint(round(self.attack[0]), round(self.attack[1]/1.999)) - random.randint(target.armour[0], target.armour[1])
         if damage < 0:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
@@ -126,11 +126,15 @@ class Hero:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name}'s armour was thrashed for {damage} damage!")
             target.health = target.health - damage
-            target.armour[1] = target.armour[1] - damage
+            if target.armour[1] > target.armour[0]:  # Insures that max armour does not go below minimum
+                target.armour[1] = target.armour[1] - (round(self.attack[1]/2+0.1))
+                if target.armour[1] < target.armour[0]:
+                    target.armour[1] = target.armour[0]
+            self.sp = self.sp - 15
 
-    def Tendon_Cut(self,target):
+    def Tendon_Cut(self,target):  # Weaker than attack, but damages target's evasion
         attack_name = "Tendon Cut"
-        damage = random.randint(self.attack[0]*0.5, self.attack[1]*0.5) - random.randint(target.armour[0], target.armour[1])
+        damage = random.randint(self.attack[0], round(self.attack[1]/1.999)) - random.randint(target.armour[0], target.armour[1])
         if damage < 0:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
@@ -142,9 +146,11 @@ class Hero:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name}'s tendons were cut for {damage} damage!")
             target.health = target.health - damage
-            target.evasion[1] = target.evasion[1] * 0.80
+            if  target.evasion[1] >  target.evasion[0]:
+                target.evasion[1] = round(target.evasion[1] * 0.80)
+        self.sp -= 10
 
-    def Berserker_slash(self,target):
+    def Berserker_Slash(self,target):  # Does 3 times the damage of attack, but damages hero in the process
         attack_name = "Beserker Slash"
         damage = random.randint(self.attack[0]*3, self.attack[1]*3) - random.randint(target.armour[0], target.armour[1])
         if damage < 0:
@@ -157,10 +163,11 @@ class Hero:
             
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} was brutally slashed for {damage} damage, but {self.name} was hurt by the attack!")
-            self.health -= (damage/5)
+            self.health -= (self.health * 0.25)
             target.health = target.health - damage
+            self.sp -= 20
 
-    def Sacrifice(self,target):
+    def Sacrifice(self,target): # Does 10 times the damage of attack, but uses half of hero health
         attack_name = "Sacrifice"
         damage = random.randint(self.attack[0]*10, self.attack[1]*10) - random.randint(target.armour[0], target.armour[1])
         if damage < 0:
@@ -172,46 +179,54 @@ class Hero:
         else:
             
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
-            print(f"""{self.name} knows the true meaning of sacrifice"\
-                  {target.name} took {damage} damage in an all out attack, but {self.name} was severly hurt by the attack!""")
+            print(f"""{self.name} knows the true meaning of sacrifice"
+                  \n{target.name} took {damage} damage in an all out attack, but {self.name} was severly hurt by the attack!""")
             self.health -= (self.health * 0.5)
             target.health = target.health - damage
+            self.sp -= 50
 
-    def Sexy_Wink(self,target):
+    def Sexy_Wink(self,target): # Decreases target armour and increases hero's evasion 
         attack_name = "Sexy Wink"
-        target.armour[1] = target.armour[1] - 1
-        self.evasion[1] = self.evasion[1] + 1
-        print(f"\n {self.name} uses {attack_name} on {target.name}.")
-        print(f"{target.name} gets the message and strips of some armour, {self.name} feels swifty")
-        self.sp = self.sp - 10
+        if target.armour[1] > target.armour[0]:  
+            target.armour[1] = target.armour[1] - 1
+            self.evasion[1] = self.evasion[1] + 4
+            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"{target.name} gets the message and strips of some armour, {self.name} feels swifty")
+        else:
+            print(f"{target.name} has no more armour to strip!")
+        self.sp -= 15
 
-    def Glob_of_Glue(self,target):
+    def Glob_of_Glue(self,target): # Decreases target armour, but also increases target attack
         attack_name = "Glob of Glue"
-        target.evasion[1] = target.evasion[1] * 0.6
-        target.attack[1] = target.attack[1] * 1.1
+        if target.evasion[1] > target.evasion[0]:  
+            target.evasion[1] = round(target.evasion[1] * 0.6)
+        target.attack[1] = round(target.attack[1] * 1.1)
         print(f"\n {self.name} uses {attack_name} on {target.name}.")
         print(f"{target.name} is stuck, but {target.name} also feels annoyed")
-               
+        self.sp -= 10       
 
-    def Armour_Up(self):
+    def Armour_Up(self,target): # Boosts hero's armour 
         attack_name = "Armour Up"
-        self.armour = [self.armour[0] * 1.5,self.armour[1] * 1.5] #Maybe boosts are too powerful, but minimum boost can be removed if so.
+        self.armour = [self.armour[0],self.armour[1] + 2] #Maybe boosts are too powerful
         print(f"\n{self.name} uses {attack_name} and gets more armour")
-
-    def Evasive_Boost(self):
+        self.sp -= 10
+        
+    def Evasive_Boost(self,target): # Boosts hero's evasion
         attack_name = "Evasive Boost"
-        self.evasion = [self.evasion[0] * 1.2,self.evasion[1] * 1.2] #Maybe boosts are too powerful, but minimum boost can be removed if so.
+        self.evasion = [self.evasion[0],self.evasion[1] + 8] #Maybe boosts are too powerful
         print(f"\n{self.name} uses {attack_name} and feels swifty.")
-
-    def Heal(self):
+        self.sp -= 10
+        
+    def Heal(self,target): # Heals hero
         attack_name = "Heal"
         base_stats = open_hero()
-        heal = base_stats.health * 0.20
+        heal = round(base_stats.health / 5)
         if (heal + self.health) > base_stats.health:
             self.health = base_stats.health
         else:
             self.health += heal
         print(f"\n{self.name} uses {attack_name} and heals for {heal} HP.")
+        self.sp -= 20
 
 
 ##### skill end #########################################################
@@ -241,8 +256,7 @@ class Hero:
             if len(self.skills)>=4:
                 userin = input("You can only have four skills, do you want to remove one?: ").lower()
                 if userin == "yes":
-                    remover = int(input(f"""Which skill do you want removed: 1:{self.skills[0]}, 2:{self.skills[1]}, 3:{self.skills[2]} or"\
-                                    4:{self.skills[3]}: """))-1
+                    remover = int(input(f"Which skill do you want removed:\n1:{self.skills[0]}\n2:{self.skills[1]}\n3:{self.skills[2]}\n4:{self.skills[3]}\n: "))-1
                     del(self.skills[remover])
                     self.skills.append(choices[user_choice])
                 else:
@@ -271,8 +285,63 @@ class Monster(Hero):
         self.armour = [1,10]
         self.evasion = [1,10]
         self.sp = 500
-        self.skills = ["m_Attack"]
+        self.skills = ["Bash", "Doom", "Enrage","Deenergize"] # At the moment Monsters start with all skills
+                                                                 # If we want more skills, we can make skill randomizer function   
 
+
+
+    def Bash(self, target):
+        damage = random.randint(self.attack[0], self.attack[1]) - random.randint(target.armour[0], target.armour[1])
+        if damage < 0:
+            damage = 0
+      
+        if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
+            print(f"{self.name} uses Bash on {target.name}.")
+            print(f"You dodged the attack!")
+        else:
+            print(f"{self.name} uses attack on {target.name}.")
+            print(f"You took {damage} damage!")
+            target.health = target.health - damage
+
+
+    def Doom(self,target): # A 2% chance to bring Hero's HP down to 1
+        attack_name = "Doom"
+        x = random.randint(1,100)
+
+        if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
+            print(f"{self.name} uses attack on {target.name}.")
+            print(f"You dodged the attack!")
+        else:
+            print(f"{self.name} uses {attack_name} on {target.name}.")
+            if x >= 99:
+            
+                print(f"You were hit by utter despair!")
+            
+                target.health = 1
+            else:
+                print("You were not doomed this time!")
+
+    def Enrage(self,target): # Boosts monster max damage by approx 20%
+        attack_name = "Enrage"
+        print(f"{self.name} uses {attack_name} and is raging mad!\nDamage increases")
+        self.attack[1] += round(self.attack[1]/5)
+
+    def Deenergize(self,target): # Does half amout of normal damage, but saps Hero's SP
+        attack_name = "Deenergize"
+        damage = random.randint(self.attack[0], self.attack[1]) - random.randint(target.armour[0], target.armour[1])/2
+        if damage < 0:
+            damage = 0
+        if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
+            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"{target.name} dodged the attack!")
+        else:
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
+            print(f"{target.name} took {damage} damage!")
+            target.health = target.health - damage
+            target.sp -= 20  
+        
+
+        
 
 #proposal to call menu as an option
 def menu():
@@ -468,9 +537,9 @@ def battle():
 
     #Monster Scaling in intervals (we can make this simpler by scaling by level)
     if player.level >= 2 and player.level <= 4:
-        monster.health = 100
-        monster.attack = [1,20]
-        monster.armour = [1,20]
+        monster.health = 80
+        monster.attack = [1,15]
+        monster.armour = [1,15]
         monster.evasion = [1,10]
     elif player.level >= 4 and player.level <= 6:
         monster.health = 200
@@ -509,17 +578,23 @@ def battle():
         #since eval() is being used, this is for security reasons
         if y >=0 and y <= 10:
             try:
-                eval(f"player.{player.skills[y]}(monster)") #player.tackle(monster)
+                if player.sp <= 0:  # Introduces SP system, heroes can go to minus SP, but will then only be able to perform basic attacks
+                    print('You are out of SP, can only perform basic attack')
+                    player.Attack(monster)
+                else:
+                    eval(f"player.{player.skills[y]}(monster)") #player.tackle(monster)
             except:
                 print("incorrect input")
                 continue
         else:
             print("incorrect input")
             continue
-        m_Attack(monster, player)
+        x = random.randint(0,len(monster.skills)-1) # Random choice for monster skills
+        eval(f"monster.{monster.skills[x]}(player)")
+
         player.sp += 10
-        print(f"Player HP: {player.health}\nPlayer SP: {player.sp}")
-        print(f"Monster HP: {monster.health}")
+        print(f"Player HP: {player.health}\nPlayer SP: {player.sp}\nPlayer Armour: {player.armour}\nPlayer Evasion: {player.evasion}")
+        print(f"Monster HP: {monster.health}\nMonster Armour{monster.armour}\nMonster Evasion{monster.evasion}")
         
     if player.health <= 0:
         print("You died")
