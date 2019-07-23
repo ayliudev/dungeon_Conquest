@@ -46,7 +46,7 @@ import sys
 import msvcrt
 import os
 
-
+#New Game, (Aaron, Alice)
 def NewGame():
     print("#############################")
     print("Welcome to Dungeon Conquest")
@@ -66,7 +66,7 @@ def NewGame():
     finalboss()
     save(player)
 
-# hero class, (Simon, Aaron)
+# hero class, (Aaron, Simon)
 class Hero:
     def __init__(self):
         self.name = "initial"
@@ -102,9 +102,9 @@ class Hero:
             return True
         else:
             return False
-# the following class methods will be used as skills, it is clumsy, but difficult to make interesting skills otherwise
 ##### skill start #####################################################
 
+    #Skills, Simon
     def Attack(self, target):
         
     #calculates damage
@@ -256,6 +256,7 @@ class Hero:
 
 
 ##### skill end #########################################################
+    #Level up, (Simon, Aaron)
     def Level_Up(self):
         
         if self.experience >= 30:
@@ -361,6 +362,7 @@ class Monster(Hero):
         self.skills = ["Bash", "Doom", "Enrage","Drain"] # At the moment Monsters start with all skills
                                                                  # If we want more skills, we can make skill randomizer function
 
+    #Monster Skills, (Simon, Aaron)
     def Bash(self, target):
         damage = random.randint(self.attack[0], self.attack[1]) - random.randint(target.armour[0], target.armour[1])
         if damage < 0:
@@ -411,11 +413,11 @@ class Monster(Hero):
             print(f"{target.name} took {damage} damage and lost 20 SP!")
             target.health = target.health - damage
             target.sp -= 20  
-#proposal to call menu as an option
+#Game Menu, (Alice, Aaron)
 def menu():
     os.system("cls")
     player = open_hero()
-    print("Menu")
+    print("Game Menu")
     print("Enter: 1 - New Game, 2 - Continue, 3 - Save, 4 - Character Data, 5 - Save and Quit")
 
     x = str(msvcrt.getch()).strip("b").strip("'")
@@ -434,7 +436,7 @@ def menu():
         menu()
 
 
-#continue menu
+#continue menu, (Aaron, Alice)
 def Continue():
     player = open_hero()
     print("Enter: 1 - Battle  2 - Main Menu  3 - Character Information  4 - Save and Quit")
@@ -481,7 +483,7 @@ def CharacterData(hero):
     x.write(f"{hero.dex},")
     x.write(f"{hero.skills},") """
 
-#saving hero as a json file
+#saving data, Aaron
 def save(hero):
     os.system("cls")
     hero_info = {}
@@ -620,17 +622,26 @@ def bossend2():
         json.dump(monster_info, outfile, indent=3)
 
 #Does the mid boss battle
+#Aaron
 def bossbattle(origin,player,boss,final):
     final = final
-    x = "This is the end of your journey."
     if final == True:
-        for i in range(3):
+        x = "This is the end of your journey."
+        for i in range(4):
             os.system("cls")
             print(f"Final Boss - {boss.name}\n")
-            print(x)
-            x += "."
+            print(x + ' - Dungeon Master')
+            x += "." 
             time.sleep(1)
-        print("Revel in victory or perish!")
+        print("Revel in victory or perish! - 'Dungeon Master'")
+    else:
+        print("Welcome to my home. - 'Soul King'")
+        time.sleep(2)
+        os.system("cls")
+        print("Now begone! - 'Soul King'")
+        time.sleep(1)
+        print("\nThe Soul king draws in half your soul. Your HP is reduced by half!")
+        player.health = player.health - round(player.health * 0.5)
     while player.health >= 0 and boss.health >= 0:
         origin.turns += 1
         #print(f"Your skills {player.skills}")
@@ -821,7 +832,7 @@ def battle():
     
         
 
-
+#Notes--------------------
     #battle takes place
     #if player levels up to 2, 4, 6
         #skills = ["Tackle", "Megaburst"]
@@ -858,7 +869,7 @@ def battle():
 ##        target.health = target.health - damage
 
 
-
+"""
 def m_Attack(enemy, target):
     #calculates damage
     damage = random.randint(enemy.attack[0], enemy.attack[1]) - random.randint(target.armour[0], target.armour[1])
@@ -873,6 +884,7 @@ def m_Attack(enemy, target):
         print(f"{enemy.name} uses attack on {target.name}.")
         print(f"You took {damage} damage!")
         target.health = target.health - damage
+"""
 
 
 
@@ -885,10 +897,11 @@ open_hero()
 m = "Tackle"
 z = eval(f"{m}(x,y)")
 """
+#Notes End------------------------
 
+
+#Aaron
 #checks if there is save data.
-
-
 try:
     hero = open("hero.json")
     try:
