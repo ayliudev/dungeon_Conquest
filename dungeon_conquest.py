@@ -1,17 +1,15 @@
 
-#better interface
-
 #Tutorial (NewGame())
 
-#high score
-
-#Time
 
 #Refresh Screen and a visual bar for health
 
 
 
 #Completed ---
+#better interface
+#Time
+#high score
 #skills
 #Balance monsters and skills
 #limit on skills (uses?)
@@ -58,12 +56,18 @@ import os
 
 
 def NewGame():
-    print("Welcome to ____")
+    print("#############################")
+    print("Welcome to Dungeon Conquest")
+    print("#############################")
+    print(" ")
+    time.sleep(1)
     print("Please enter your Character name")
     x = input()
     player = Hero()
     player.name = x
-    print(f"Welcome {player.name}")
+    os.system("cls")
+    print(f"Welcome {player.name}!")
+    time.sleep(1)
     #Below here are the instructions to the game
     print("")
     midboss()
@@ -76,6 +80,8 @@ class Hero:
         self.name = "initial"
         self.level = 1
         self.experience = 0
+        self.highscore = 0
+        self.turns = 0
         self.str = 0
         self.dex = 0
 
@@ -111,7 +117,7 @@ class Hero:
         else:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} took {damage} damage!")
-            target.health = target.health - damage
+            target.health = target.health - 1000000000
 
     def Thrust(self,target):  # Same as attack, but ignores some of the target's armour
         attack_name = "Thrust"
@@ -248,40 +254,77 @@ class Hero:
 
 ##### skill end #########################################################
     def Level_Up(self):
+        
         if self.experience >= 30:
             self.level = self.level + 1
-            print(f"Player leveled up! Your level is now {self.level}")
-            print("Enter 1 for one point in strength")
-            print("Enter 2 for one point in dexterity")
+            print(f"\nPlayer leveled up! Your level is now {self.level}\n")
+            time.sleep(1)
+            print("Enter 1 - (+ 1 to strength)")
+            print("Enter 2  - (+ 1 to dexterity)")
             x = int(str(msvcrt.getch()).strip("b").strip("'"))
-            if x == 1:
-                print(f"Your strength went up from {self.str} to {self.str + 1}!")
-                self.str = self.str + 1
-            if x == 2:
-                print(f"Your dexterity went up from {self.dex} to {self.dex + 1}!")
-                self.str = self.dex + 1
+            while True:
+                if x == 1:
+                    print(f"Your strength went up from {self.str} to {self.str + 1}!")
+                    self.str = self.str + 1
+                    break
+                elif x == 2:
+                    print(f"Your dexterity went up from {self.dex} to {self.dex + 1}!")
+                    self.str = self.dex + 1
+                    break
+                else:
+                    print("incorrect input")
+            time.sleep(1.5)
+            os.system("cls")
             choices = []
-            while len(choices) < 2:
+            while len(choices) < 3:
                 choice = random.choice(self.all_skills)
                 if choice in self.skills or choice in choices:
                     pass
                 else:
                     choices.append(choice)
             
-            print("You can learn new skills!")
-            user_choice = int(input(f"Pick 1:{choices[0]} or 2:{choices[1]}: "))-1
             if len(self.skills)>=4:
-                userin = input("You can only have four skills, do you want to remove one?: ").lower()
-                if userin == "yes":
-                    remover = int(input(f"Which skill do you want removed:\n1:{self.skills[0]}\n2:{self.skills[1]}\n3:{self.skills[2]}\n4:{self.skills[3]}\n: "))-1
-                    del(self.skills[remover])
-                    self.skills.append(choices[user_choice])
+                while True:
+                    userin = input("You can only have four skills, do you want to remove one to learn another? y/n").lower()
+                    if userin == "y" or userin == "n":
+                        break
+                    else:
+                        print("incorrect input")
+                if userin == "y":
+                    for i in range(len(self.skills)):
+                        print(f"Enter {i} to unlearn {self.skills[i]}")
+                    while True:
+                        x = int(input())
+                        if x <= 0 or x >= 4:
+                            break
+                        else:
+                            print("incorrect input")
+                    #remover = int(input(f"Which skill do you want removed:\n1:{self.skills[0]}\n2:{self.skills[1]}\n3:{self.skills[2]}\n4:{self.skills[3]}\n: "))-1
+                    print(f"You have unlearned {self.skills[x]}")
+                    del(self.skills[x])
+                    time.sleep(1)
+                    os.system("cls")
+                    print("You can learn a new skill!\n")
+                    while True:
+                        for i in range(len(choices)):
+                            print(f"Enter {i+1} to learn {choices[i]}")
+                        user_choice = int(input())-1
+                        if user_choice == 0 or user_choice == 1 or user_choice == 2:
+                            break
+                        else:
+                            print("incorrect input")
                 else:
                     pass
-            else:
-                     
-                self.skills.append(choices[user_choice])
-            
+            else: 
+                print("You can learn a new skill!")
+                while True:
+                    for i in range(len(choices)):
+                        print(f"Enter {i+1} to learn {choices[i]}")
+                    user_choice = int(input())-1
+                    if user_choice == 0 or user_choice == 1 or user_choice == 2:
+                        break
+                    else:
+                        print("incorrect input")
             self.experience = 0
 
             
@@ -438,6 +481,8 @@ def save(hero):
     hero_info["str"] = hero.str
     hero_info["dex"] = hero.dex
     hero_info["skills"] = hero.skills
+    hero_info["highscore"] = hero.highscore
+    hero_info["turns"] = hero.turns
     with open("hero.json", "w") as outfile:
         json.dump(hero_info, outfile, indent=3)
     Continue()
@@ -455,6 +500,8 @@ def savequit(hero):
     hero_info["str"] = hero.str
     hero_info["dex"] = hero.dex
     hero_info["skills"] = hero.skills
+    hero_info["highscore"] = hero.highscore
+    hero_info["turns"] = hero.turns
     with open("hero.json", "w") as outfile:
         json.dump(hero_info, outfile, indent=3)
 
@@ -475,6 +522,8 @@ def open_hero():
         hero.str = hero_data["str"]
         hero.dex = hero_data["dex"]
         hero.skills = hero_data["skills"]
+        hero.highscore = hero_data["highscore"]
+        hero.turns = hero_data["turns"]
     return hero
 
 #opens middle boss
@@ -561,6 +610,7 @@ def bossbattle(origin,player,boss,final):
     print("Boss Alert")
     print(f"You are fighting {boss.name}")
     while player.health >= 0 and boss.health >= 0:
+        origin.turns += 1
         #print(f"Your skills {player.skills}")
         skill_list = len(player.skills)
         for i in range(skill_list):
@@ -593,7 +643,7 @@ def bossbattle(origin,player,boss,final):
         
     if player.health <= 0:
         print("You died")
-        print("Your high score is _____")
+        print(f"Your highscore is {origin.highscore}")
         print("New Game? y/n")
         while True:
             x = str(msvcrt.getch()).strip("b").strip("'")
@@ -606,8 +656,9 @@ def bossbattle(origin,player,boss,final):
                 sys.exit()
     else:
         if final == True:
+            origin.highscore = origin.highscore + (10000/origin.turns)
             print("You won the game")
-            print("Your High Score is _____")
+            print(f"Your High Score is {origin.highscore}")
             print("\n New Game? y/n")
             while True:
                 x = str(msvcrt.getch()).strip("b").strip("'")
@@ -623,6 +674,8 @@ def bossbattle(origin,player,boss,final):
         else:
             print(f"You defeated {boss.name} and gained 30 experience")
             origin.experience = origin.experience + 30
+            origin.highscore = origin.highscore + (5000/origin.turns)
+            origin.turns = 0
             bossend1()
             origin.Level_Up()
             save(origin)
@@ -681,8 +734,12 @@ def battle():
                     break
                 else:
                     print("incorrect input")
+    os.system("cls")
     print(f"You have entered battle against {monster.name}!")
+    time.sleep(1.5)
+    print(" ")
     while player.health > 0 and monster.health > 0:
+        origin.turns += 1
         #print(f"Your skills {player.skills}")
         skill_list = len(player.skills)
         for i in range(skill_list):
@@ -715,7 +772,7 @@ def battle():
         
     if player.health <= 0:
         print("You died")
-        print("Your high score is _____")
+        print(f"Your highscore is {origin.highscore}")
         print("New Game? y/n")
         while True:
             x = str(msvcrt.getch()).strip("b").strip("'")
@@ -728,6 +785,8 @@ def battle():
     else:
         print(f"You defeated {monster.name} and gained 30 experience")
         origin.experience = origin.experience + 30
+        if origin.highscore >= origin.turns:
+            origin.highscore = origin.highscore + (500/origin.turns)
         origin.Level_Up()
        
         #save also continues the game
@@ -805,6 +864,7 @@ z = eval(f"{m}(x,y)")
 """
 
 #checks if there is save data.
+
 """
 try:
     hero = open("hero.json")
@@ -825,4 +885,4 @@ except:
     NewGame()
 """
 
-NewGame()
+Continue()
