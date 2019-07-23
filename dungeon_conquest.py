@@ -1,11 +1,3 @@
-
-#Tutorial (NewGame())
-
-
-#Refresh Screen and a visual bar for health
-
-
-
 #Completed ---
 #better interface
 #Time
@@ -93,6 +85,17 @@ class Hero:
         self.sp = 40 + (10*self.dex)
         self.all_skills = ["Attack", "Thrust", "Armour_Breaker", "Tendon_Cut", "Berserker_Slash", "Sacrifice",
                            "Sexy_Wink", "Glob_of_Glue", "Armour_Up","Evasive_Boost", "Heal" ]
+        self.descriptions = {"Attack": "Basic Attack",
+                           "Thrust": "An attack that ignores some of the enemey's armour",
+                           "Armour_Breaker": "A weaker attack, but leaves lasting damage on enemy armour",
+                           "Tendon_Cut": "A minor attack that slices enemy tendons, decreasing their evasion",
+                           "Berserker_Slash": "Does 3X times the damage, but it hurts you as well",
+                           "Sacrifice": "An incredibly devastating attack, but sacrifices half your health after each use",
+                           "Sexy_Wink": "Decreases the enemy's armour and boosts your evasion",
+                           "Glob_of_Glue": "A sticky mess that decreases the enemy's evasion, but increases their attack",
+                           "Armour_Up": "Increases player armour",
+                           "Evasive_Boost": "Increases player evasion",
+                           "Heal": "Restores player health"}
     
     def __eq__(self, target):
         if self.name == target.name:
@@ -167,7 +170,7 @@ class Hero:
         else:
             
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
-            print(f"{target.name}'s tendons were cut for {damage} damage!")
+            print(f"{target.name}'s tendons were cut for {damage} damage, reducing their evasion by 20%!")
             target.health = target.health - damage
             if  target.evasion[1] >  target.evasion[0]:
                 target.evasion[1] = round(target.evasion[1] * 0.80)
@@ -185,7 +188,7 @@ class Hero:
         else:
             
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
-            print(f"{target.name} was brutally slashed for {damage} damage, but {self.name} was hurt by the attack!")
+            print(f"{target.name} was brutally slashed for {damage} damage, but {self.name} was hurt by the attack and lost 25% HP!")
             self.health -= (self.health * 0.25)
             target.health = target.health - damage
             self.sp -= 20
@@ -204,7 +207,7 @@ class Hero:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"""{self.name} knows the true meaning of sacrifice"
                   \n{target.name} took {damage} damage in an all out attack, but {self.name} was severly hurt by the attack!""")
-            self.health -= (self.health * 0.5)
+            self.health -= round((self.health * 0.5))
             target.health = target.health - damage
             self.sp -= 50
 
@@ -303,17 +306,18 @@ class Hero:
                             break
                         else:
                             print("incorrect input")
-                    #remover = int(input(f"Which skill do you want removed:\n1:{self.skills[0]}\n2:{self.skills[1]}\n3:{self.skills[2]}\n4:{self.skills[3]}\n: "))-1
-                    print(f"\nYou have unlearned {self.skills[x]}")
+                    s_name = self.skills[x].split("_")
+                    s_name = " ".join(s_name)
+                    print(f"\nYou have unlearned {s_name}")
                     del(self.skills[x])
-                    time.sleep(1.5)
+                    time.sleep(1.25)
                     os.system("cls")
                     print("You can learn a new skill!\n")
                     while True:
                         for i in range(len(choices)):
                             s_name = choices[i].split("_")
                             s_name = " ".join(s_name)
-                            print(f"Enter {i+1} to learn {s_name}")
+                            print(f"Enter {i+1} to learn {s_name}: {self.descriptions[choices[i]]}")
                         user_choice = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
                         if user_choice == 0 or user_choice == 1 or user_choice == 2:
                             self.skills.append(choices[user_choice])
@@ -328,7 +332,7 @@ class Hero:
                     for i in range(len(choices)):
                         s_name = choices[i].split("_")
                         s_name = " ".join(s_name)
-                        print(f"Enter {i+1} to learn {s_name}")
+                        print(f"Enter {i+1} to learn {s_name}: {self.descriptions[choices[i]]}")
                     user_choice = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
                     if user_choice == 0 or user_choice == 1 or user_choice == 2:
                         self.skills.append(choices[user_choice])
@@ -363,34 +367,35 @@ class Monster(Hero):
             damage = 0
       
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
-            print(f"{self.name} uses Bash on {target.name}.")
+            print(f"\n{self.name} uses Bash on {target.name}.")
             print(f"You dodged the attack!")
         else:
-            print(f"{self.name} uses attack on {target.name}.")
+            print(f"\n{self.name} uses bash on {target.name}.")
             print(f"You took {damage} damage!")
             target.health = target.health - damage
 
 
-    def Doom(self,target): # A 2% chance to bring Hero's HP down to 1
+    def Doom(self,target): # A 5% chance to half the Hero's HP
         attack_name = "Doom"
         x = random.randint(1,100)
 
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
-            print(f"{self.name} uses attack on {target.name}.")
+            print(f"\n{self.name} uses attack on {target.name}.")
             print(f"You dodged the attack!")
         else:
-            print(f"{self.name} uses {attack_name} on {target.name}.")
-            if x >= 99:
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
+            if x >= 96:
             
-                print(f"You were hit by utter despair!")
+                print(f"You were hit by utter despair and lost half of your health!")
             
-                target.health = 1
+                target.health = target.health - round(target.health * 0.5)
             else:
                 print("You were not doomed this time!")
 
     def Enrage(self,target): # Boosts monster max damage by approx 20%
         attack_name = "Enrage"
-        print(f"{self.name} uses {attack_name} and is raging mad!\nDamage increases")
+        print(f"\n{self.name} uses {attack_name} and is raging mad!\nMonster Damage increases by 20%")
+        self.attack[0] += round(self.attack[0]/5)
         self.attack[1] += round(self.attack[1]/5)
 
     def Drain(self,target): # Does half amout of normal damage, but saps Hero's SP
@@ -402,8 +407,8 @@ class Monster(Hero):
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
-            print(f"{self.name} uses {attack_name} on {target.name}.")
-            print(f"{target.name} took {damage} damage!")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
+            print(f"{target.name} took {damage} damage and lost 20 SP!")
             target.health = target.health - damage
             target.sp -= 20  
 #proposal to call menu as an option
@@ -657,8 +662,7 @@ def bossbattle(origin,player,boss,final):
         x = random.randint(0,len(boss.skills)-1) # Random choice for boss skills
         eval(f"boss.{boss.skills[x]}(player)")
         player.sp += 10
-        print(f"Player HP: {player.health}\nPlayer SP: {player.sp}")
-        print(f"boss HP: {boss.health}")
+        print(f"\nPlayer HP: {player.health}\nBoss HP: {boss.health}\n\nPlayer SP: {player.sp}")
         
     if player.health <= 0:
         print("You died\n")
@@ -787,7 +791,7 @@ def battle():
         x = random.randint(0,len(monster.skills)-1) # Random choice for monster skills
         eval(f"monster.{monster.skills[x]}(player)")
         player.sp += 10
-        print(f"Player HP: {player.health}, Monster HP: {monster.health}\nPlayer SP: {player.sp}")
+        print(f"\nPlayer HP: {player.health}\nMonster HP: {monster.health}\n\nPlayer SP: {player.sp}")
         
     if player.health <= 0:
         print("You died\n")
@@ -884,7 +888,7 @@ z = eval(f"{m}(x,y)")
 
 #checks if there is save data.
 
-"""
+
 try:
     hero = open("hero.json")
     try:
@@ -902,6 +906,3 @@ try:
 except:
     print("here?")
     NewGame()
-"""
-
-Continue()
