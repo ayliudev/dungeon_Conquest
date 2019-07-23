@@ -91,8 +91,17 @@ class Hero:
         self.evasion = [(1 + (5*self.dex)), (10 + (5*self.dex))]
         self.skills = ["Attack"]
         self.sp = 40 + (10*self.dex)
-        self.all_skills = ["Attack", "Thrust", "Armour_Breaker", "Tendon_Cut", "Berserker_Slash", "Sacrifice",
-                           "Sexy_Wink", "Glob_of_Glue", "Armour_Up","Evasive_Boost", "Heal" ]
+        self.all_skills = {"Attack": "Do you really need an explanation for this?",
+                           "Thrust": "An attack that ignores some of the enemey's armour",
+                           "Armour_Breaker": "A weaker attack, but leaves lasting damage on enemy armour",
+                           "Tendon_Cut": "A minor attack that slices enemy tendons, decreasing their evasion",
+                           "Berserker_Slash": "Does 3X times the damage, but it hurts you as well",
+                           "Sacrifice": "An incredibly devastating attack, but after each use you're twice as close to death",
+                           "Sexy_Wink": "'Undresses' the enemy's armour and boosts your evasion",
+                           "Glob_of_Glue": "A sticky mess that makes enemies less evasive, but also increases their attack",
+                           "Armour_Up": "MORE ARMOUR!",
+                           "Evasive_Boost": "It's time to dodge some arrows!",
+                           "Heal": "The almighty heal, restores health"}
     
     def __eq__(self, target):
         if self.name == target.name:
@@ -277,7 +286,7 @@ class Hero:
             time.sleep(.5)
             choices = []
             while len(choices) < 3:
-                choice = random.choice(self.all_skills)
+                choice = random.choice(list(self.all_skills.keys()))
                 if choice in self.skills or choice in choices:
                     pass
                 else:
@@ -285,35 +294,31 @@ class Hero:
             
             if len(self.skills)>=4:
                 print("You can only have up to four skills!")
-                print("Would you like to unlearn a skill to learn another? y/n\n")
+                print("Would you like to unlearn a skill to learn another? y/n")
                 while True:
-                    userin = str(msvcrt.getch()).strip("b").strip("'")
+                    userin = x = str(msvcrt.getch()).strip("b").strip("'")
                     if userin == "y" or userin == "n":
                         break
                     else:
                         print("incorrect input")
                 if userin == "y":
                     for i in range(len(self.skills)):
-                        s_name = self.skills[i].split("_")
-                        s_name = " ".join(s_name)
-                        print(f"Enter {i+1} to unlearn {s_name}")
+                        print(f"Enter {i} to unlearn {self.skills[i]}")
                     while True:
-                        x = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
+                        x = int(input())
                         if x >= 0 and x <= 4:
                             break
                         else:
                             print("incorrect input")
                     #remover = int(input(f"Which skill do you want removed:\n1:{self.skills[0]}\n2:{self.skills[1]}\n3:{self.skills[2]}\n4:{self.skills[3]}\n: "))-1
-                    print(f"\nYou have unlearned {self.skills[x]}")
+                    print(f"You have unlearned {self.skills[x]}")
                     del(self.skills[x])
-                    time.sleep(1.5)
+                    time.sleep(.5)
                     os.system("cls")
                     print("You can learn a new skill!\n")
                     while True:
                         for i in range(len(choices)):
-                            s_name = choices[i].split("_")
-                            s_name = " ".join(s_name)
-                            print(f"Enter {i+1} to learn {s_name}")
+                            print(f"Enter {i+1} to learn {choices[i]}: {self.all_skills[choices[i]]}")
                         user_choice = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
                         if user_choice == 0 or user_choice == 1 or user_choice == 2:
                             self.skills.append(choices[user_choice])
@@ -326,9 +331,7 @@ class Hero:
                 print("You can learn a new skill!")
                 while True:
                     for i in range(len(choices)):
-                        s_name = choices[i].split("_")
-                        s_name = " ".join(s_name)
-                        print(f"Enter {i+1} to learn {s_name}")
+                       print(f"Enter {i+1} to learn {choices[i]}: {self.all_skills[choices[i]]}")
                     user_choice = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
                     if user_choice == 0 or user_choice == 1 or user_choice == 2:
                         self.skills.append(choices[user_choice])
@@ -354,7 +357,7 @@ class Monster(Hero):
         self.attack = [1,10]
         self.armour = [1,10]
         self.evasion = [1,10]
-        self.skills = ["Bash", "Doom", "Enrage","Drain"] # At the moment Monsters start with all skills
+        self.skills = ["Bash", "Doom", "Enrage","Deenergize"] # At the moment Monsters start with all skills
                                                                  # If we want more skills, we can make skill randomizer function
 
     def Bash(self, target):
@@ -393,8 +396,8 @@ class Monster(Hero):
         print(f"{self.name} uses {attack_name} and is raging mad!\nDamage increases")
         self.attack[1] += round(self.attack[1]/5)
 
-    def Drain(self,target): # Does half amout of normal damage, but saps Hero's SP
-        attack_name = "Drain"
+    def Deenergize(self,target): # Does half amout of normal damage, but saps Hero's SP
+        attack_name = "Deenergize"
         damage = random.randint(self.attack[0], self.attack[1]) - random.randint(target.armour[0], target.armour[1])/2
         if damage < 0:
             damage = 0
@@ -402,7 +405,7 @@ class Monster(Hero):
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
-            print(f"{self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} took {damage} damage!")
             target.health = target.health - damage
             target.sp -= 20  
@@ -573,7 +576,7 @@ def midboss():
     monster_info["armour"] = [1,20]
     monster_info["evasion"] = [1,15]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["Bash", "Doom", "Enrage","Drain"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("midboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -585,7 +588,7 @@ def bossend1():
     monster_info["armour"] = [1,20]
     monster_info["evasion"] = [1,15]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["Bash", "Doom", "Enrage","Drain"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("midboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -598,7 +601,7 @@ def finalboss():
     monster_info["armour"] = [1,30]
     monster_info["evasion"] = [1,20]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["Bash", "Doom", "Enrage","Drain"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("finalboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -610,7 +613,7 @@ def bossend2():
     monster_info["armour"] = [1,30]
     monster_info["evasion"] = [1,20]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["Bash", "Doom", "Enrage","Drain"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("finalboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -631,9 +634,7 @@ def bossbattle(origin,player,boss,final):
         #print(f"Your skills {player.skills}")
         skill_list = len(player.skills)
         for i in range(skill_list):
-            s_name = player.skills[i].split("_")
-            s_name = " ".join(s_name)
-            print(f"\nEnter {i + 1} to use {s_name}")
+            print(f"\nEnter {i + 1} to use {player.skills[i]}")
         try:
             y = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
         except:
@@ -733,6 +734,7 @@ def battle():
         monster.evasion = [7,17]
     if player.level >= 5:
         midboss = open_midboss()
+        print(midboss.health)
         if midboss.health > 0:
             print("Fight the mid-dungeon boss?")
             print("Enter: y or n")
@@ -760,9 +762,7 @@ def battle():
         #print(f"Your skills {player.skills}")
         skill_list = len(player.skills)
         for i in range(skill_list):
-            s_name = player.skills[i].split("_")
-            s_name = " ".join(s_name)
-            print(f"\nEnter {i + 1} to use {s_name}")
+            print(f"\nEnter {i + 1} to use {player.skills[i]}")
         try:
             y = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
         except:
