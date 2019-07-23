@@ -112,12 +112,12 @@ class Hero:
             damage = 0
     #calculates if enemy dodged
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} took {damage} damage!")
-            target.health = target.health - 1000000000
+            target.health = target.health - damage
 
     def Thrust(self,target):  # Same as attack, but ignores some of the target's armour
         attack_name = "Thrust"
@@ -127,7 +127,7 @@ class Hero:
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
             
             
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
@@ -142,7 +142,7 @@ class Hero:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
             
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
             
@@ -162,7 +162,7 @@ class Hero:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
             
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
             
@@ -180,7 +180,7 @@ class Hero:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
             
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
             
@@ -197,7 +197,7 @@ class Hero:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(60,100):
             
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
             
@@ -213,7 +213,7 @@ class Hero:
         if target.armour[1] > target.armour[0]:  
             target.armour[1] = target.armour[1] - 1
             self.evasion[1] = self.evasion[1] + 4
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} gets the message and strips of some armour, {self.name} feels swifty")
         else:
             print(f"{target.name} has no more armour to strip!")
@@ -224,7 +224,7 @@ class Hero:
         if target.evasion[1] > target.evasion[0]:  
             target.evasion[1] = round(target.evasion[1] * 0.6)
         target.attack[1] = round(target.attack[1] * 1.1)
-        print(f"\n {self.name} uses {attack_name} on {target.name}.")
+        print(f"\n{self.name} uses {attack_name} on {target.name}.")
         print(f"{target.name} is stuck, but {target.name} also feels annoyed")
         self.sp -= 10       
 
@@ -257,24 +257,24 @@ class Hero:
         
         if self.experience >= 30:
             self.level = self.level + 1
-            print(f"\nPlayer leveled up! Your level is now {self.level}\n")
-            time.sleep(1)
+            print(f"You leveled up to level {self.level}!\n")
+            time.sleep(0.2)
             print("Enter 1 - (+ 1 to strength)")
             print("Enter 2  - (+ 1 to dexterity)")
             x = int(str(msvcrt.getch()).strip("b").strip("'"))
+            os.system("cls")
             while True:
                 if x == 1:
-                    print(f"Your strength went up from {self.str} to {self.str + 1}!")
+                    print(f"\nYour strength went up from {self.str} to {self.str + 1}!\n")
                     self.str = self.str + 1
                     break
                 elif x == 2:
-                    print(f"Your dexterity went up from {self.dex} to {self.dex + 1}!")
+                    print(f"\nYour dexterity went up from {self.dex} to {self.dex + 1}!\n")
                     self.str = self.dex + 1
                     break
                 else:
                     print("incorrect input")
-            time.sleep(1.5)
-            os.system("cls")
+            time.sleep(.5)
             choices = []
             while len(choices) < 3:
                 choice = random.choice(self.all_skills)
@@ -284,8 +284,10 @@ class Hero:
                     choices.append(choice)
             
             if len(self.skills)>=4:
+                print("You can only have up to four skills!")
+                print("Would you like to unlearn a skill to learn another? y/n")
                 while True:
-                    userin = input("You can only have four skills, do you want to remove one to learn another? y/n").lower()
+                    userin = x = str(msvcrt.getch()).strip("b").strip("'")
                     if userin == "y" or userin == "n":
                         break
                     else:
@@ -295,21 +297,22 @@ class Hero:
                         print(f"Enter {i} to unlearn {self.skills[i]}")
                     while True:
                         x = int(input())
-                        if x <= 0 or x >= 4:
+                        if x >= 0 and x <= 4:
                             break
                         else:
                             print("incorrect input")
                     #remover = int(input(f"Which skill do you want removed:\n1:{self.skills[0]}\n2:{self.skills[1]}\n3:{self.skills[2]}\n4:{self.skills[3]}\n: "))-1
                     print(f"You have unlearned {self.skills[x]}")
                     del(self.skills[x])
-                    time.sleep(1)
+                    time.sleep(.5)
                     os.system("cls")
                     print("You can learn a new skill!\n")
                     while True:
                         for i in range(len(choices)):
                             print(f"Enter {i+1} to learn {choices[i]}")
-                        user_choice = int(input())-1
+                        user_choice = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
                         if user_choice == 0 or user_choice == 1 or user_choice == 2:
+                            self.skills.append(choices[user_choice])
                             break
                         else:
                             print("incorrect input")
@@ -320,8 +323,9 @@ class Hero:
                 while True:
                     for i in range(len(choices)):
                         print(f"Enter {i+1} to learn {choices[i]}")
-                    user_choice = int(input())-1
+                    user_choice = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
                     if user_choice == 0 or user_choice == 1 or user_choice == 2:
+                        self.skills.append(choices[user_choice])
                         break
                     else:
                         print("incorrect input")
@@ -389,7 +393,7 @@ class Monster(Hero):
         if damage < 0:
             damage = 0
         if random.randint(target.evasion[0], target.evasion[1]) >= random.randint(0,100):
-            print(f"\n {self.name} uses {attack_name} on {target.name}.")
+            print(f"\n{self.name} uses {attack_name} on {target.name}.")
             print(f"{target.name} dodged the attack!")
         else:
             print(f"\n{self.name} uses {attack_name} on {target.name}.")
@@ -449,7 +453,7 @@ def CharacterData(hero):
 
     print(f"Strength: {hero.str}")
     print(f"Dexterity: {hero.dex}")
-    print(f"Skills: {hero.skills}")
+    print(f"Skills: {hero.skills}\n")
     Continue()
 
 
@@ -607,8 +611,15 @@ def bossend2():
 #Does the mid boss battle
 def bossbattle(origin,player,boss,final):
     final = final
-    print("Boss Alert")
-    print(f"You are fighting {boss.name}")
+    x = "This is the end of your journey."
+    if final == True:
+        for i in range(3):
+            os.system("cls")
+            print(f"Final Boss - {boss.name}\n")
+            print(x)
+            x += "."
+            time.sleep(1)
+        print("Revel in victory or perish!")
     while player.health >= 0 and boss.health >= 0:
         origin.turns += 1
         #print(f"Your skills {player.skills}")
@@ -642,8 +653,8 @@ def bossbattle(origin,player,boss,final):
         print(f"boss HP: {boss.health}")
         
     if player.health <= 0:
-        print("You died")
-        print(f"Your highscore is {origin.highscore}")
+        print("You died\n")
+        print(f"Your Highscore is {round(origin.highscore)}\n")
         print("New Game? y/n")
         while True:
             x = str(msvcrt.getch()).strip("b").strip("'")
@@ -657,9 +668,9 @@ def bossbattle(origin,player,boss,final):
     else:
         if final == True:
             origin.highscore = origin.highscore + (10000/origin.turns)
-            print("You won the game")
-            print(f"Your High Score is {origin.highscore}")
-            print("\n New Game? y/n")
+            print("You won the game\n")
+            print(f"Your Highscore is {round(origin.highscore)}")
+            print("\nNew Game? y/n")
             while True:
                 x = str(msvcrt.getch()).strip("b").strip("'")
                 if x == "y":
@@ -735,8 +746,7 @@ def battle():
                 else:
                     print("incorrect input")
     os.system("cls")
-    print(f"You have entered battle against {monster.name}!")
-    time.sleep(1.5)
+    print(f"You have entered battle against a {monster.name}!")
     print(" ")
     while player.health > 0 and monster.health > 0:
         origin.turns += 1
@@ -750,6 +760,7 @@ def battle():
             print("incorrect input")
             continue
         os.system("cls")
+        print(f"Monster - {monster.name}")
         #since eval() is being used, this is for security reasons
         if y >=0 and y <= 10:
             try:
@@ -767,12 +778,11 @@ def battle():
         x = random.randint(0,len(monster.skills)-1) # Random choice for monster skills
         eval(f"monster.{monster.skills[x]}(player)")
         player.sp += 10
-        print(f"Player HP: {player.health}\nPlayer SP: {player.sp}")
-        print(f"Monster HP: {monster.health}")
+        print(f"Player HP: {player.health}, Monster HP: {monster.health}\nPlayer SP: {player.sp}")
         
     if player.health <= 0:
-        print("You died")
-        print(f"Your highscore is {origin.highscore}")
+        print("You died\n")
+        print(f"Your Highscore is {round(origin.highscore)}\n")
         print("New Game? y/n")
         while True:
             x = str(msvcrt.getch()).strip("b").strip("'")
