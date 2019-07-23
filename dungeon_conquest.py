@@ -1,22 +1,23 @@
-#skills
+
 #better interface
+
 #Tutorial (NewGame())
-#high score (points for winning battle relative to level)
-#turn counter. more points for beating it quickly
-#limit on skills (uses?)
-#monster uses a random one of 1-4 skills
-#Balance monsters and skills
+
+#high score
 
 #Time
-#Refresh Screen and a visual bar for health
-#Research
-    #exception for capturing key presses
 
-#Brainstomrm
-    #
+#Refresh Screen and a visual bar for health
+
 
 
 #Completed ---
+#skills
+#Balance monsters and skills
+#limit on skills (uses?)
+#monster uses a random one of 1-4 skills
+#Research
+    #exception for capturing key presses
 #save(Finished)
 #smooth out battle system 
     #read player level
@@ -40,7 +41,7 @@
         #if player experience >= 30:
                 #player level = player level + 1
                 #print(you leveld up, choose 1 for 1 point in str or 2 for 1 point in dex)
-                #input()
+                #str(msvcrt.getch()).strip("b").strip("'")
                 #You can choose one new skill
                     #pickbetween one or two
                 #
@@ -52,12 +53,14 @@ import random
 import time
 import json
 import sys
+import msvcrt
+import os
 
 
 def NewGame():
     print("Welcome to ____")
     print("Please enter your Character name")
-    x = str(input())
+    x = input()
     player = Hero()
     player.name = x
     print(f"Welcome {player.name}")
@@ -250,7 +253,7 @@ class Hero:
             print(f"Player leveled up! Your level is now {self.level}")
             print("Enter 1 for one point in strength")
             print("Enter 2 for one point in dexterity")
-            x = int(input())
+            x = int(str(msvcrt.getch()).strip("b").strip("'"))
             if x == 1:
                 print(f"Your strength went up from {self.str} to {self.str + 1}!")
                 self.str = self.str + 1
@@ -352,11 +355,12 @@ class Monster(Hero):
             target.sp -= 20  
 #proposal to call menu as an option
 def menu():
+    os.system("cls")
     player = open_hero()
     print("Menu")
     print("Enter: 1 - New Game, 2 - Continue, 3 - Save, 4 - Character Data, 5 - Save and Quit")
 
-    x = input()
+    x = str(msvcrt.getch()).strip("b").strip("'")
     if x == "1":
         NewGame()
     elif x == "2":
@@ -376,7 +380,7 @@ def menu():
 def Continue():
     player = open_hero()
     print("Enter: 1 - Battle  2 - Main Menu  3 - Character Information  4 - Save and Quit")
-    x = input()
+    x = str(msvcrt.getch()).strip("b").strip("'")
     if x == "1":
         battle()
     elif x == "2":
@@ -391,6 +395,7 @@ def Continue():
 
 #prints character info, (Simon, Aaron)
 def CharacterData(hero):
+    os.system("cls")
     print(f"Name: {hero.name}")
     print(f"Level: {hero.level}")
     print(f"Health: {hero.health}")
@@ -420,6 +425,7 @@ def CharacterData(hero):
 
 #saving hero as a json file
 def save(hero):
+    os.system("cls")
     hero_info = {}
     hero_info["name"] = hero.name 
     hero_info["level"] = hero.level
@@ -508,7 +514,7 @@ def midboss():
     monster_info["armour"] = [1,20]
     monster_info["evasion"] = [1,15]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["m_Tackle"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("midboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -520,7 +526,7 @@ def bossend1():
     monster_info["armour"] = [1,20]
     monster_info["evasion"] = [1,15]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["m_Tackle"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("midboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -533,7 +539,7 @@ def finalboss():
     monster_info["armour"] = [1,30]
     monster_info["evasion"] = [1,20]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["m_Tackle"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("finalboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -545,7 +551,7 @@ def bossend2():
     monster_info["armour"] = [1,30]
     monster_info["evasion"] = [1,20]
     monster_info["sp"] = 500
-    monster_info["skills"] = ["m_Tackle"]
+    monster_info["skills"] = ["Bash", "Doom", "Enrage","Deenergize"]
     with open("finalboss.json", "w") as outfile:
         json.dump(monster_info, outfile, indent=3)
 
@@ -560,31 +566,37 @@ def bossbattle(origin,player,boss,final):
         for i in range(skill_list):
             print(f"\nEnter {i + 1} to use {player.skills[i]}")
         try:
-            y = int(input()) - 1
+            y = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
         except:
             print("incorrect input")
             continue
+        os.system("cls")
         #since eval() is being used, this is for security reasons
         if y >=0 and y <= 10:
             try:
-                eval(f"player.{player.skills[y]}(boss)") #player.tackle(boss)
+                if player.sp <= 0:  # Introduces SP system, heroes can go to minus SP, but will then only be able to perform basic attacks
+                    print('You are out of SP, can only perform basic attack')
+                    player.Attack(boss)
+                else:
+                    eval(f"player.{player.skills[y]}(boss)") #player.tackle(boss)
             except:
                 print("incorrect input")
                 continue
         else:
             print("incorrect input")
             continue
-        m_Attack(boss, player)
+        x = random.randint(0,len(boss.skills)-1) # Random choice for boss skills
+        eval(f"boss.{boss.skills[x]}(player)")
         player.sp += 10
         print(f"Player HP: {player.health}\nPlayer SP: {player.sp}")
-        print(f"Boss HP: {boss.health}")
+        print(f"boss HP: {boss.health}")
         
     if player.health <= 0:
         print("You died")
         print("Your high score is _____")
         print("New Game? y/n")
         while True:
-            x = input()
+            x = str(msvcrt.getch()).strip("b").strip("'")
             if x == "y":
                 NewGame()
             elif x == "n":
@@ -598,7 +610,7 @@ def bossbattle(origin,player,boss,final):
             print("Your High Score is _____")
             print("\n New Game? y/n")
             while True:
-                x = input()
+                x = str(msvcrt.getch()).strip("b").strip("'")
                 if x == "y":
                     NewGame()
                 elif x == "n":
@@ -653,7 +665,7 @@ def battle():
         if midboss.health > 0:
             print("Fight the mid-dungeon boss?")
             print("Enter: y or n")
-            x = input()
+            x = str(msvcrt.getch()).strip("b").strip("'")
             if x == "y":
                 bossbattle(origin,player,midboss,False)
                 pass
@@ -662,7 +674,7 @@ def battle():
             print("Would you like to fight the Final boss?")
             print("Enter: y or n")
             while True:
-                x = input()
+                x = str(msvcrt.getch()).strip("b").strip("'")
                 if x == "y":
                     bossbattle(origin,player,finalboss,True)
                 elif x == "n":
@@ -676,10 +688,11 @@ def battle():
         for i in range(skill_list):
             print(f"\nEnter {i + 1} to use {player.skills[i]}")
         try:
-            y = int(input()) - 1
+            y = int(str(msvcrt.getch()).strip("b").strip("'")) - 1
         except:
             print("incorrect input")
             continue
+        os.system("cls")
         #since eval() is being used, this is for security reasons
         if y >=0 and y <= 10:
             try:
@@ -705,7 +718,7 @@ def battle():
         print("Your high score is _____")
         print("New Game? y/n")
         while True:
-            x = input()
+            x = str(msvcrt.getch()).strip("b").strip("'")
             if x == "y":
                 NewGame()
             elif x == "n":
@@ -763,7 +776,7 @@ def battle():
 ##        target.health = target.health - damage
 
 
-"""
+
 def m_Attack(enemy, target):
     #calculates damage
     damage = random.randint(enemy.attack[0], enemy.attack[1]) - random.randint(target.armour[0], target.armour[1])
@@ -778,7 +791,7 @@ def m_Attack(enemy, target):
         print(f"{enemy.name} uses attack on {target.name}.")
         print(f"You took {damage} damage!")
         target.health = target.health - damage
-"""
+
 
 
 """
@@ -792,7 +805,7 @@ z = eval(f"{m}(x,y)")
 """
 
 #checks if there is save data.
-
+"""
 try:
     hero = open("hero.json")
     try:
@@ -810,3 +823,6 @@ try:
 except:
     print("here?")
     NewGame()
+"""
+
+NewGame()
